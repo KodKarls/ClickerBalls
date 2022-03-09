@@ -3,14 +3,15 @@ Ball = {}
 Ball.__index = Ball
 
 -- Constructor.
-function Ball.new( m, x_pos, y_pos, r, color )
+function Ball.new( m, r, color, t )
     local instance = setmetatable( {}, Ball )
 
     instance.m = m
-    instance.x_pos = x_pos
-    instance.y_pos = y_pos
+    instance.x_pos = math.random( 0, love.graphics.getWidth() )
+    instance.y_pos = math.random( 0, love.graphics.getHeight() )
     instance.r = r
     instance.color = color
+    instance.timer = t
 
     return instance
 end
