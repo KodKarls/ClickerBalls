@@ -1,6 +1,7 @@
 -- Add modules.
 require('ball')
 require('timer')
+require('scoring')
 
 -- Define local module variables.
 local ball_1 = nil
@@ -11,21 +12,30 @@ local balls = nil
 
 local timer = nil
 
+local scoring = nil
+
 -- Define local module functions.
 
 -- Create the new balls.
 local function create_balls()
     -- Create instances of balls.
-    ball_1 = Ball.new( 'fill', 30, {1, 0, 0, 1}, Timer.new( 2, {1, 1, 1, 1}, 20 ) )
-    ball_2 = Ball.new( 'fill', 30, { 0, 1, 0, 1 }, Timer.new( 4, {1, 1, 1, 1}, 20 ) )
-    ball_3 = Ball.new( 'fill', 30, { 0, 0, 1, 1 }, Timer.new( 90, {1, 1, 1, 1}, 20 ) )       -- This ball will never disappear ( only if you click )
+    ball_1 = Ball.new( 'fill', 30, {1, 0, 0, 1}, Timer.new( 1, {1, 1, 1, 1}, 20 ), 10 )
+    ball_2 = Ball.new( 'fill', 30, { 0, 1, 0, 1 }, Timer.new( 3, {1, 1, 1, 1}, 20 ), 5 )
+    ball_3 = Ball.new( 'fill', 30, { 0, 0, 1, 1 }, Timer.new( 90, {1, 1, 1, 1}, 20 ), 1 )       -- This ball will never disappear ( only if you click )
 
     -- Add all balls to the array.
     balls = { ball_1, ball_2, ball_3 }
 end
 
+-- Get distance between click position and the ball.
+local function get_distance( x1, y1, x2, y2 )
+    return math.sqrt( ( x2 - x1 ) ^ 2 + ( y2 - y1 ) ^ 2 )
+end
+
 function love.load()
     create_balls()
+
+    scoring = Scoring.new( 0, {1, 1, 1, 1}, 20 )
 
     -- Create instance of timer.
     timer = Timer.new( 60, {1, 1, 1, 1}, 20 )
@@ -61,4 +71,23 @@ function love.draw()
 
     -- Draw the timer on the screen.
     timer:draw()
+
+    -- Draw the score on the screen.
+    scoring:draw()
+end
+
+-- React for mouse pressed.
+function love.mousepressed( x, y, button, istouch, presses )
+    if button == 1 then
+        ::continue::
+        for i = 1, #balls, 1 do
+            local position = balls[ i ]:get_position()
+            local mouse_to_target = get_distance( x, y, position[ 1 ], position[ 2 ] )
+            if mouse_to_target < balls[ i ]:get_radius() then
+                scoring:set_score( scoring:get_score() + balls[ i ]:get_points() )
+                table.remove( balls, i )
+                goto continue
+            end
+        end
+    end
 end
