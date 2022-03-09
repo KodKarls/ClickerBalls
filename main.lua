@@ -2,6 +2,7 @@
 require('ball')
 require('timer')
 require('scoring')
+require('notification')
 
 -- Define local module variables.
 local ball_1 = nil
@@ -13,6 +14,10 @@ local balls = nil
 local timer = nil
 
 local scoring = nil
+
+local game_active = false
+
+local notification = nil
 
 -- Define local module functions.
 
@@ -32,7 +37,26 @@ local function get_distance( x1, y1, x2, y2 )
     return math.sqrt( ( x2 - x1 ) ^ 2 + ( y2 - y1 ) ^ 2 )
 end
 
+-- Reset the game content.
+local function rest_game()
+    game_active = true
+    notification:set_text( "" )
+    timer:set_seconds( 60 )
+    scoring:set_score( 0 )
+    create_balls()
+end
+
+-- Finish the game.
+local function end_game()
+    balls = {}
+    game_active = false
+    notification:set_text( "End of time!\nPress spacebar to start ..." )
+end
+
 function love.load()
+    -- Create start notification.
+    notification = Notification.new( "Press spacebar to start ...", { 1, 1, 1, 1 }, 20 )
+
     create_balls()
 
     scoring = Scoring.new( 0, {1, 1, 1, 1}, 20 )
@@ -42,28 +66,35 @@ function love.load()
 end
 
 function love.update(dt)
-    timer:set_seconds( timer:get_seconds() - dt )
-    if timer:get_seconds() < 0 then
-        timer:set_seconds( 0 )                      -- End countdown.
-    end
-
-    ::continue::
-    for i = 1, #balls, 1 do
-        balls[ i ].timer:set_seconds( balls[ i ].timer:get_seconds() - dt )
-        if balls[ i ].timer:get_seconds() < 0 then
-            balls[ i ].timer:set_seconds( 0 )
-            table.remove( balls, i )                -- Erase the ball after time reach 0.
-            goto continue                           -- Iterate through all balls again.
+    ::start::
+    if game_active then
+        timer:set_seconds( timer:get_seconds() - dt )
+        if timer:get_seconds() < 0 then                     -- End countdown.
+            end_game()
+            goto start
         end
-    end
 
-    if #balls == 0 then
-        -- Create the new balls.
-        create_balls()
+        ::continue::
+        for i = 1, #balls, 1 do
+            balls[ i ].timer:set_seconds( balls[ i ].timer:get_seconds() - dt )
+            if balls[ i ].timer:get_seconds() < 0 then
+                balls[ i ].timer:set_seconds( 0 )
+                table.remove( balls, i )                -- Erase the ball after time reach 0.
+                goto continue                           -- Iterate through all balls again.
+            end
+        end
+
+        if #balls == 0 then
+            -- Create the new balls.
+            create_balls()
+        end
     end
 end
 
 function love.draw()
+    -- Draw notification on the screen.
+    notification:draw()
+
     -- Draw balls on the screen.
     for i = 1, #balls, 1 do
         balls[ i ]:draw()
@@ -91,3 +122,10 @@ function love.mousepressed( x, y, button, istouch, presses )
         end
     end
 end
+
+-- React for key pressed.
+function love.keypressed( key )
+    if key == "space" then
+       rest_game()
+    end
+ end
