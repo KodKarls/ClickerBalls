@@ -1,9 +1,9 @@
 -- Add modules.
-require('ball')
-require('timer')
-require('scoring')
-require('notification')
-require('music')
+require( 'ball' )
+require( 'timer' )
+require( 'scoring' )
+require( 'notification' )
+require( 'music' )
 
 -- Define local module variables.
 local ball_1 = nil
@@ -43,34 +43,35 @@ end
 -- Reset the game content.
 local function rest_game()
     game_active = true
-    notification:set_text( "" )
+    create_balls()
     timer:set_seconds( 60 )
     scoring:set_score( 0 )
-    create_balls()
+    notification:set_text( "" )
     music:play()
 end
 
 -- Finish the game.
 local function end_game()
-    balls = {}
     game_active = false
+    balls = {}
     notification:set_text( "End of time!\nPress spacebar to start ..." )
     music:stop()
 end
 
 function love.load()
-    -- Create notification instance.
-    notification = Notification.new( "Press spacebar to start ...", { 1, 1, 1, 1 }, 20 )
-
     -- Create balls.
     create_balls()
+    
+    -- Create timer instance.
+    timer = Timer.new( 60, {1, 1, 1, 1}, 20 )
 
     -- Create scoring instance.
     scoring = Scoring.new( 0, {1, 1, 1, 1}, 20 )
 
-    -- Create timer instance.
-    timer = Timer.new( 60, {1, 1, 1, 1}, 20 )
+    -- Create notification instance.
+    notification = Notification.new( "Press spacebar to start ...", { 1, 1, 1, 1 }, 20 )
 
+    -- Create music instance.
     music = Music.new( "penguinmusic-modern-chillout" )
 end
 
