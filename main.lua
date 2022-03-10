@@ -3,6 +3,7 @@ require('ball')
 require('timer')
 require('scoring')
 require('notification')
+require('music')
 
 -- Define local module variables.
 local ball_1 = nil
@@ -18,6 +19,8 @@ local scoring = nil
 local game_active = false
 
 local notification = nil
+
+local music = nil
 
 -- Define local module functions.
 
@@ -44,6 +47,7 @@ local function rest_game()
     timer:set_seconds( 60 )
     scoring:set_score( 0 )
     create_balls()
+    music:play()
 end
 
 -- Finish the game.
@@ -51,6 +55,7 @@ local function end_game()
     balls = {}
     game_active = false
     notification:set_text( "End of time!\nPress spacebar to start ..." )
+    music:stop()
 end
 
 function love.load()
@@ -65,6 +70,8 @@ function love.load()
 
     -- Create timer instance.
     timer = Timer.new( 60, {1, 1, 1, 1}, 20 )
+
+    music = Music.new( "penguinmusic-modern-chillout" )
 end
 
 function love.update(dt)
