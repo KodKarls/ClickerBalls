@@ -46,6 +46,7 @@ local function rest_game()
     create_balls()
     timer:set_seconds( 60 )
     scoring:set_score( 0 )
+    scoring:load_best_score()
     notification:set_text( "" )
     music:play()
 end
@@ -54,6 +55,7 @@ end
 local function end_game()
     game_active = false
     balls = {}
+    scoring:save_best_score( scoring:get_score() )
     notification:set_text( "End of time!\nPress spacebar to start ..." )
     music:stop()
 end
@@ -64,6 +66,7 @@ function love.load()
 
     -- Create scoring instance.
     scoring = Scoring.new( 0, {1, 1, 1, 1}, 20 )
+    scoring:load_best_score()
 
     -- Create notification instance.
     notification = Notification.new( "Press spacebar to start ...", { 1, 1, 1, 1 }, 20 )
@@ -107,7 +110,10 @@ function love.draw()
     timer:draw()
 
     -- Draw the score on the screen.
-    scoring:draw()
+    scoring:draw_score()
+
+    -- Draw the best score on the screen.
+    scoring:draw_best_score()
 
     -- Draw notification on the screen.
     notification:draw()
