@@ -13,7 +13,7 @@ function Scoring.new( score, color, font_size )
     return instance
 end
 
--- Draw the score on the screen.
+-- Draw the score.
 function Scoring:draw()
     love.graphics.setColor( self.color[ 1 ], self.color[ 2 ], self.color[ 3 ], self.color[ 4 ] )
     love.graphics.setFont( self.font )
@@ -26,6 +26,6 @@ function Scoring:get_score()
 end
 
 -- Set the score.
-function Scoring:set_score( s )
-    self.score = s
+function Scoring:set_score( score )
+    self.score = score
 end

@@ -26,13 +26,13 @@ local function create_balls()
     -- Create instances of balls.
     ball_1 = Ball.new( 'fill', 30, {1, 0, 0, 1}, Timer.new( 1, {1, 1, 1, 1}, 20 ), 10 )
     ball_2 = Ball.new( 'fill', 30, { 0, 1, 0, 1 }, Timer.new( 3, {1, 1, 1, 1}, 20 ), 5 )
-    ball_3 = Ball.new( 'fill', 30, { 0, 0, 1, 1 }, Timer.new( 90, {1, 1, 1, 1}, 20 ), 1 )       -- This ball will never disappear ( only if you click )
+    ball_3 = Ball.new( 'fill', 30, { 0, 0, 1, 1 }, Timer.new( 90, {1, 1, 1, 1}, 20 ), 1 )  -- This ball will never disappear ( only if you click )
 
     -- Add all balls to the array.
     balls = { ball_1, ball_2, ball_3 }
 end
 
--- Get distance between click position and the ball.
+-- Get distance between click position and the ball position.
 local function get_distance( x1, y1, x2, y2 )
     return math.sqrt( ( x2 - x1 ) ^ 2 + ( y2 - y1 ) ^ 2 )
 end
@@ -54,47 +54,45 @@ local function end_game()
 end
 
 function love.load()
-    -- Create start notification.
+    -- Create notification instance.
     notification = Notification.new( "Press spacebar to start ...", { 1, 1, 1, 1 }, 20 )
 
+    -- Create balls.
     create_balls()
 
+    -- Create scoring instance.
     scoring = Scoring.new( 0, {1, 1, 1, 1}, 20 )
 
-    -- Create instance of timer.
+    -- Create timer instance.
     timer = Timer.new( 60, {1, 1, 1, 1}, 20 )
 end
 
 function love.update(dt)
-    ::start::
+    ::start::                       -- If countdown reach the end break all instructions.
     if game_active then
         timer:set_seconds( timer:get_seconds() - dt )
-        if timer:get_seconds() < 0 then                     -- End countdown.
+        if timer:get_seconds() < 0 then
             end_game()
             goto start
         end
 
-        ::continue::
+        ::continue::                -- If any ball is removed then iterate through all balls again.
         for i = 1, #balls, 1 do
             balls[ i ].timer:set_seconds( balls[ i ].timer:get_seconds() - dt )
             if balls[ i ].timer:get_seconds() < 0 then
                 balls[ i ].timer:set_seconds( 0 )
-                table.remove( balls, i )                -- Erase the ball after time reach 0.
-                goto continue                           -- Iterate through all balls again.
+                table.remove( balls, i )
+                goto continue
             end
         end
 
         if #balls == 0 then
-            -- Create the new balls.
             create_balls()
         end
     end
 end
 
 function love.draw()
-    -- Draw notification on the screen.
-    notification:draw()
-
     -- Draw balls on the screen.
     for i = 1, #balls, 1 do
         balls[ i ]:draw()
@@ -105,12 +103,15 @@ function love.draw()
 
     -- Draw the score on the screen.
     scoring:draw()
+
+    -- Draw notification on the screen.
+    notification:draw()
 end
 
 -- React for mouse pressed.
 function love.mousepressed( x, y, button, istouch, presses )
     if button == 1 then
-        ::continue::
+        ::continue::                -- If any ball is removed then iterate through all balls again.
         for i = 1, #balls, 1 do
             local position = balls[ i ]:get_position()
             local mouse_to_target = get_distance( x, y, position[ 1 ], position[ 2 ] )

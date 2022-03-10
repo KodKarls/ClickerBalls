@@ -13,7 +13,7 @@ function Notification.new( text, color, font_size )
     return instance
 end
 
--- Draw the notification on the screen.
+-- Draw the notification.
 function Notification:draw()
     love.graphics.setColor( self.color[ 1 ], self.color[ 2 ], self.color[ 3 ], self.color[ 4 ] )
     love.graphics.setFont( self.font )

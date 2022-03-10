@@ -1,5 +1,5 @@
 -- Game settings.
-function love.conf(t)
+function love.conf( t )
     t.version = "11.4"                              -- The LÖVE version this game was made for (string)
     t.window.title = "Clicker Balls"                -- The window title (string)
     t.window.icon = "res/images/balls-icon.jpg"     -- Filepath to an image to use as the window's icon (string)
