@@ -10,7 +10,7 @@ local ball_1 = nil
 local ball_2 = nil
 local ball_3 = nil
 
-local balls = nil
+local balls = {}
 
 local timer = nil
 
@@ -59,9 +59,6 @@ local function end_game()
 end
 
 function love.load()
-    -- Create balls.
-    create_balls()
-    
     -- Create timer instance.
     timer = Timer.new( 60, {1, 1, 1, 1}, 20 )
 
